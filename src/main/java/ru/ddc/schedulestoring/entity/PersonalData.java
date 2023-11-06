@@ -2,22 +2,31 @@ package ru.ddc.schedulestoring.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.UniqueConstraint;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
 @Embeddable
 public class PersonalData {
 
+    @Getter
+    @Setter
     @Column(name = "firstname", nullable = false, length = 64)
     private String firstname;
 
+    @Getter
+    @Setter
     @Column(name = "lastname", nullable = false, length = 64)
     private String lastname;
 
+    @Getter
+    @Setter
     @Column(name = "patronymic", length = 64)
     private String patronymic;
 
+    @Getter
+    @Setter
     @Column(name = "birthdate", nullable = false)
     private LocalDate birthdate;
 
@@ -37,6 +46,7 @@ public class PersonalData {
         this.birthdate = birthdate;
     }
 
+    // TODO удалить метод toString
     @Override
     public String toString() {
         return "PersonalData{" +
@@ -49,10 +59,12 @@ public class PersonalData {
 }
 
 /*
-*               const1  const2  nullable    unique  insertable  updatable
-*   firstname   yes     yes     no          no      yes         yes
-*   lastname    yes     yes     no          no      yes         yes
-*   patronymic  no      yes     yes         no      yes         yes
-*   birthdate   yes     yes     no          no      yes         yes
+*               const1  const2
+*               arg     arg     nullable    unique  insertable  updatable   setter  getter  init_method change_method
+*   -----------------------------------------------------------------------------------------------------------------
+*   firstname   yes     yes     no          no      yes         yes         yes     yes     constructor setter
+*   lastname    yes     yes     no          no      yes         yes         yes     yes     constructor setter
+*   patronymic  no      yes     yes         no      yes         yes         yes     yes     constructor setter
+*   birthdate   yes     yes     no          no      yes         yes         yes     yes     constructor setter
 *
 * */
