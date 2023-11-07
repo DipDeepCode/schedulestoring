@@ -9,6 +9,11 @@ import java.time.LocalDate;
 
 @Embeddable
 public class PersonalData {
+    public static final String NULL_OR_BLANK_FIRSTNAME_MESSAGE = "Не указано имя";
+    public static final String NULL_OR_BLANK_LASTNAME_MESSAGE = "Не указана фамилия";
+    public static final String NULL_OR_BLANK_PATRONYMIC_MESSAGE = "Не указано отчество";
+    public static final String NULL_BIRTHDATE_MESSAGE = "Не указана дата рождения";
+    public static final String WRONG_BIRTHDATE_MESSAGE = "Дата рождения не может быть в будущем";
 
     @Getter
     @Setter
@@ -34,16 +39,28 @@ public class PersonalData {
     }
 
     public PersonalData(String firstname, String lastname, LocalDate birthdate) {
+        if (firstname == null || firstname.length() < 2) {
+            throw new IllegalArgumentException(NULL_OR_BLANK_FIRSTNAME_MESSAGE);
+        }
         this.firstname = firstname;
+        if (lastname == null || lastname.length() < 2) {
+            throw new IllegalArgumentException(NULL_OR_BLANK_LASTNAME_MESSAGE);
+        }
         this.lastname = lastname;
+        if (birthdate == null) {
+            throw new IllegalArgumentException(NULL_BIRTHDATE_MESSAGE);
+        } else if (birthdate.isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException(WRONG_BIRTHDATE_MESSAGE);
+        }
         this.birthdate = birthdate;
     }
 
     public PersonalData(String firstname, String lastname, String patronymic, LocalDate birthdate) {
-        this.firstname = firstname;
-        this.lastname = lastname;
+        this(firstname, lastname, birthdate);
+        if (patronymic == null || patronymic.length() < 2) {
+            throw new IllegalArgumentException(NULL_OR_BLANK_PATRONYMIC_MESSAGE);
+        }
         this.patronymic = patronymic;
-        this.birthdate = birthdate;
     }
 
     // TODO удалить метод toString
