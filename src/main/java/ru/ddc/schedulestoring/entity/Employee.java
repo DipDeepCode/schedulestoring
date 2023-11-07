@@ -53,6 +53,7 @@ public class Employee {
 
     public Employee(PersonalData personalData) {
         this.personalData = personalData;
+        this.vacancy = null;
         this.addedAt = LocalDate.now();
         this.isDeleted = false;
         this.deletedAt = null;
@@ -81,7 +82,7 @@ public class Employee {
 *       lastname    ---     no          ---     yes         yes         ---     yes     ---         ---
 *       patronymic  ---     yes         ---     yes         yes         ---     yes     ---         ---
 *       birthdate   ---     no          ---     yes         yes         ---     yes     ---         ---
-*   vacancy         no      yes         ---     yes         yes         yes     yes     ---         setter
+*   vacancy         no      yes         ---     yes         yes         yes     yes     constructor setter
 *   addedAt         no      no          no      yes         no          no      yes     constructor ---
 *   isDeleted       no      no          no      yes         no          no      yes     constructor @SQLDelete
 *   deletedAt       no      yes         no      no          no          no      yes     constructor @SQLDelete
