@@ -5,45 +5,33 @@ import ru.ddc.schedulestoring.entity.PersonalData;
 import ru.ddc.schedulestoring.entity.Vacancy;
 
 import java.lang.reflect.Field;
+import java.time.LocalDate;
 
 public class EntityFactory {
 
-    public Vacancy createBlankVacancy() {
-        return new Vacancy();
-    }
-
-    public Employee createBlankEmployee() {
-        return new Employee();
-    }
-
-    public PersonalData createBlancPersonalData() {
-        return new PersonalData();
-    }
-
     public PersonalData createPersonalDataWithRandomValues() {
-        PersonalData personalData = createBlancPersonalData();
-        ObjectFieldsFillerA.fillFieldsWithRandomValues(personalData,
+        PersonalData personalData = new PersonalData();
+        ObjectFieldsFiller.fillFieldsWithRandomValues(personalData,
                 "firstname", "lastname", "patronymic", "birthdate");
         return personalData;
     }
 
+    public Employee createEmployeeWithRandomValues() {
+        return new Employee(createPersonalDataWithRandomValues());
+    }
+
     public Vacancy createVacancyWithRandomValues() {
-        Vacancy vacancy = createBlankVacancy();
-        ObjectFieldsFillerA.fillFieldsWithRandomValues(vacancy, "salary", "position");
-        System.out.println(vacancy);
+        Vacancy vacancy = new Vacancy();
+        ObjectFieldsFiller.fillFieldsWithRandomValues(vacancy, "salary", "position");
         return vacancy;
     }
 
-    public Vacancy createVacancyWithSalaryAndPosition(Long salary, String position) {
-        return new Vacancy(salary, position);
-    }
-
-    public Vacancy createVacancyWithBlancEmployee() {
-        Vacancy vacancy = createBlankVacancy();
+    public Vacancy createVacancyWithRandomValuesAndEmployee() {
+        Vacancy vacancy = createVacancyWithRandomValues();
         try {
             Field employeeField = vacancy.getClass().getDeclaredField("employee");
             employeeField.setAccessible(true);
-            employeeField.set(vacancy, createBlankEmployee());
+            employeeField.set(vacancy, createEmployeeWithRandomValues());
             return vacancy;
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
@@ -51,11 +39,14 @@ public class EntityFactory {
     }
 
     public Vacancy createDeletedVacancy() {
-        Vacancy vacancy = createBlankVacancy();
+        Vacancy vacancy = createVacancyWithRandomValues();
         try {
             Field isDeleted = vacancy.getClass().getDeclaredField("isDeleted");
             isDeleted.setAccessible(true);
             isDeleted.setBoolean(vacancy, true);
+            Field deletedAt = vacancy.getClass().getDeclaredField("deletedAt");
+            deletedAt.setAccessible(true);
+            deletedAt.set(vacancy, LocalDate.now());
             return vacancy;
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);

@@ -1,56 +1,41 @@
 package ru.ddc.schedulestoring.utils;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.time.*;
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 
+@Component
 public class ObjectFieldsFiller {
+    private static Long minLongValue = 1L;
+    private static Long maxLongValue = 200000L;
+    private static Integer stringLength = 10;
 
-    public static <T> T fillFieldsRandomValues(Class<T> tClass) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {//T tObject) {
 
-        T tObject = tClass.getDeclaredConstructor().newInstance();
-//        Class<?> objectClass = tObject.getClass();
-        Field[] fields = tClass.getDeclaredFields();
-
-        for (Field field : fields) {
-            setRandomValueInField(field, tObject);
-        }
-
-        return tObject;
+    public static <T> void fillFieldsWithRandomValues(T object, String... fieldsNames) {
+        Class<?> aClass = object.getClass();
+        Arrays.stream(fieldsNames).forEach(fieldName -> {
+            try {
+                Field field = aClass.getDeclaredField(fieldName);
+                field.setAccessible(true);
+                setRandomValueIntoField(object, field);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
-    private static void setRandomValueInField(Field field, Object object) {
-
-        Long minLongValue = 1L;
-        Long maxLongValue = 200000L;
-
-        Integer stringLength = 10;
-
-        field.setAccessible(true);
+    private static <T> void setRandomValueIntoField(T object, Field field) throws IllegalAccessException {
         String fieldType = field.getType().getSimpleName();
-
-        try {
             switch (fieldType) {
                 case "Long" -> setLongValue(object, field, minLongValue, maxLongValue);
                 case "String" -> setStringValue(object, field, stringLength);
-                case "ZonedDateTime" -> setZonedDateTimeValue(object, field);
                 case "LocalDate" -> setLocalDateValue(object, field);
-//                case "Student" -> setStudentValue(object, field);
-//                case "Mentor" -> setMentorValue(object, field);
-                case "Boolean" -> setBooleanValue(object, field);
-                default -> setNullValue(object, field);
             }
-        } catch (IllegalAccessException ignore) {// TODO
-        }
-    }
-
-    private static void setLocalDateValue(Object object, Field field) throws IllegalAccessException {
-        LocalDate randomDate = LocalDate.now()
-                .minusDays(ThreadLocalRandom.current().nextInt(0, 15000));
-        field.set(object, randomDate);
     }
 
     private static void setLongValue(Object object, Field field, Long minValue, Long maxValue) throws IllegalAccessException {
@@ -69,28 +54,21 @@ public class ObjectFieldsFiller {
         field.set(object, randomStr);
     }
 
-    private static void setZonedDateTimeValue(Object object, Field field) throws IllegalAccessException {
-        ZonedDateTime randomDateTime = ZonedDateTime.now()
-                .minusSeconds(ThreadLocalRandom.current().nextInt(0, 1659624728));
-        field.set(object, randomDateTime);
+    private static void setLocalDateValue(Object object, Field field) throws IllegalAccessException {
+        LocalDate randomDate = LocalDate.now()
+                .minusDays(ThreadLocalRandom.current().nextInt(0, 15000));
+        field.set(object, randomDate);
     }
 
-//    private static void setStudentValue(Object object, Field field) throws IllegalAccessException {
-//        Student randomStudent = fillFieldsRandomValues(new Student());
-//        field.set(object, randomStudent);
-//    }
-//
-//    private static void setMentorValue(Object object, Field field) throws IllegalAccessException {
-//        Mentor randomMentor = fillFieldsRandomValues(new Mentor());
-//        field.set(object, randomMentor);
-//    }
-
-    private static void setBooleanValue(Object object, Field field) throws IllegalAccessException {
-        Boolean randomBoolean = ThreadLocalRandom.current().nextBoolean();
-        field.set(object, randomBoolean);
+    public static void setMinLongValue(Long minLongValue) {
+        ObjectFieldsFiller.minLongValue = minLongValue;
     }
 
-    private static void setNullValue(Object object, Field field) throws IllegalAccessException {
-        field.set(object, null);
+    public static void setMaxLongValue(Long maxLongValue) {
+        ObjectFieldsFiller.maxLongValue = maxLongValue;
+    }
+
+    public static void setStringLength(Integer stringLength) {
+        ObjectFieldsFiller.stringLength = stringLength;
     }
 }
