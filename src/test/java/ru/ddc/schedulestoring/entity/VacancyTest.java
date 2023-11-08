@@ -25,22 +25,28 @@ class VacancyTest {
     @Test
     @DisplayName("Создание вакансии с отрицательной или нулевой зарплатой")
     public void givenNegativeOrZeroSalary_whenConstructVacancy_thenThrowException() {
-        IllegalArgumentException exception =
-                assertThrows(IllegalArgumentException.class, () -> new Vacancy(0L, "position"));
-        assertEquals(Vacancy.NEGATIVE_OR_ZERO_SALARY_MESSAGE, exception.getMessage());
-        exception = assertThrows(IllegalArgumentException.class, () -> new Vacancy(-100L, "position"));
-        assertEquals(Vacancy.NEGATIVE_OR_ZERO_SALARY_MESSAGE, exception.getMessage());
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new Vacancy(0L, "position"),
+                Vacancy.NEGATIVE_OR_ZERO_SALARY_MESSAGE);
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new Vacancy(-100L, "position"),
+                Vacancy.NEGATIVE_OR_ZERO_SALARY_MESSAGE);
     }
 
 
     @Test
     @DisplayName("Создание вакансии с пустым или null полем должность")
     public void givenNullOrBlankPosition_whenConstructVacancy_thenTrowException() {
-        IllegalArgumentException exception =
-                assertThrows(IllegalArgumentException.class, () -> new Vacancy(100L, null));
-        assertEquals(Vacancy.NULL_OR_BLANK_POSITION_MESSAGE, exception.getMessage());
-        exception = assertThrows(IllegalArgumentException.class, () -> new Vacancy(100L, ""));
-        assertEquals(Vacancy.NULL_OR_BLANK_POSITION_MESSAGE, exception.getMessage());
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new Vacancy(100L, null),
+                Vacancy.NULL_OR_BLANK_POSITION_MESSAGE);
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new Vacancy(100L, ""),
+                Vacancy.NULL_OR_BLANK_POSITION_MESSAGE);
     }
 
     @Test
@@ -58,19 +64,31 @@ class VacancyTest {
     public void givenVacancyWithEmployee_whenAssignEmployee_thenThrowException() {
         Vacancy vacancy = entityFactory.createVacancyWithRandomValuesAndEmployee();
         Employee employee = entityFactory.createEmployeeWithRandomValues();
-        AssignEmployeeException exception =
-                assertThrows(AssignEmployeeException.class, () -> vacancy.assignEmployee(employee));
-        assertEquals(Vacancy.OCCUPIED_VACANCY_MESSAGE, exception.getMessage());
+        assertThrows(
+                AssignEmployeeException.class,
+                () -> vacancy.assignEmployee(employee),
+                Vacancy.OCCUPIED_VACANCY_MESSAGE);
     }
 
     @Test
     @DisplayName("Закрепить сотрудника за удаленной вакансией")
-    public void givenDeletedVacancy_whenAssignEmployee_thenThrowException(){
+    public void givenDeletedVacancy_whenAssignEmployee_thenThrowException() {
         Vacancy vacancy = entityFactory.createDeletedVacancy();
         Employee employee = entityFactory.createEmployeeWithRandomValues();
-        AssignEmployeeException exception =
-                assertThrows(AssignEmployeeException.class, () -> vacancy.assignEmployee(employee));
-        assertEquals(Vacancy.DELETED_VACANCY_MESSAGE, exception.getMessage());
+        assertThrows(
+                AssignEmployeeException.class,
+                () -> vacancy.assignEmployee(employee),
+                Vacancy.DELETED_VACANCY_MESSAGE);
+    }
+
+    @Test
+    @DisplayName("Закрепление employee = null")
+    public void givenNullEmployee_whenAssignEmployee_thenThrowException() {
+        Vacancy vacancy = entityFactory.createVacancyWithRandomValues();
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> vacancy.assignEmployee(null),
+                Vacancy.NULL_EMPLOYEE_ARGUMENT_MESSAGE);
     }
 
     @Test
@@ -87,7 +105,9 @@ class VacancyTest {
     @DisplayName("Открепить сотрудника от вакансии без сотрудника")
     public void givenVacancyWithoutEmployee_whenRemoveEmployee_thenThrowException() {
         Vacancy vacancy = entityFactory.createVacancyWithRandomValues();
-        RemoveEmployeeException exception = assertThrows(RemoveEmployeeException.class, vacancy::removeEmployee);
-        assertEquals(Vacancy.VACANCY_WITHOUT_EMPLOYEE_MESSAGE, exception.getMessage());
+        assertThrows(
+                RemoveEmployeeException.class,
+                vacancy::removeEmployee,
+                Vacancy.VACANCY_WITHOUT_EMPLOYEE_MESSAGE);
     }
 }

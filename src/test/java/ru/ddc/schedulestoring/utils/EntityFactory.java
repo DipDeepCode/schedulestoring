@@ -2,7 +2,9 @@ package ru.ddc.schedulestoring.utils;
 
 import ru.ddc.schedulestoring.entity.Employee;
 import ru.ddc.schedulestoring.entity.PersonalData;
+import ru.ddc.schedulestoring.entity.Specialization;
 import ru.ddc.schedulestoring.entity.Vacancy;
+import static ru.ddc.schedulestoring.utils.ObjectFieldsFiller.*;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
@@ -11,7 +13,7 @@ public class EntityFactory {
 
     public PersonalData createPersonalDataWithRandomValues() {
         PersonalData personalData = new PersonalData();
-        ObjectFieldsFiller.fillFieldsWithRandomValues(personalData,
+        fillFieldsWithRandomValues(personalData,
                 "firstname", "lastname", "patronymic", "birthdate");
         return personalData;
     }
@@ -22,7 +24,7 @@ public class EntityFactory {
 
     public Vacancy createVacancyWithRandomValues() {
         Vacancy vacancy = new Vacancy();
-        ObjectFieldsFiller.fillFieldsWithRandomValues(vacancy, "salary", "position");
+        fillFieldsWithRandomValues(vacancy, "salary", "position");
         return vacancy;
     }
 
@@ -51,5 +53,11 @@ public class EntityFactory {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Specialization createSpecializationWithRandomValues() {
+        Specialization specialization = new Specialization();
+        fillFieldsWithRandomValues(specialization, "briefDescription", "fullDescription", "code");
+        return specialization;
     }
 }

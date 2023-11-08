@@ -20,4 +20,13 @@ class EmployeeTest {
         assertFalse(employee.isDeleted());
         assertNull(employee.getDeletedAt());
     }
+
+    @Test
+    @DisplayName("Создание сотрудника с PersonalData = null")
+    public void givenNullPersonalData_whenConstructEmployee_thenThrowException() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new Employee(null),
+                Employee.NULL_PERSONAL_DATA_MESSAGE);
+    }
 }

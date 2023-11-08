@@ -19,6 +19,7 @@ import java.time.LocalDate;
 @DiscriminatorColumn(name = "employee_type")
 @SQLDelete(sql = "update employee set deleted_at=current_date, is_deleted=true where id=?")
 public class Employee {
+    public static final String NULL_PERSONAL_DATA_MESSAGE = "Не указаны персональные данные";
 
     @Getter
     @Id
@@ -52,11 +53,15 @@ public class Employee {
     }
 
     public Employee(PersonalData personalData) {
-        this.personalData = personalData;
-        this.vacancy = null;
-        this.addedAt = LocalDate.now();
-        this.isDeleted = false;
-        this.deletedAt = null;
+        if (personalData == null) {
+            throw new IllegalArgumentException(NULL_PERSONAL_DATA_MESSAGE);
+        } else {
+            this.personalData = personalData;
+            this.vacancy = null;
+            this.addedAt = LocalDate.now();
+            this.isDeleted = false;
+            this.deletedAt = null;
+        }
     }
 
     // TODO удалить метод toString

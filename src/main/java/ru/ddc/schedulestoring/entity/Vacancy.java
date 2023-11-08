@@ -15,6 +15,7 @@ import java.time.LocalDate;
 @Table(name = "vacancy")
 @SQLDelete(sql = "update vacancy set deleted_at=current_date, is_deleted=true where id=?")
 public class Vacancy {
+    public static final String NULL_EMPLOYEE_ARGUMENT_MESSAGE = "Сотрудник не может быть null";
     public static final String NEGATIVE_OR_ZERO_SALARY_MESSAGE = "Зарплата не может быть меньше ноля";
     public static final String NULL_OR_BLANK_POSITION_MESSAGE = "Не указана должность";
     public static final String OCCUPIED_VACANCY_MESSAGE = "Вакансия занята";
@@ -73,7 +74,9 @@ public class Vacancy {
     }
 
     public void assignEmployee(final Employee employee) {
-        if (this.employee != null) {
+        if (employee == null) {
+            throw new IllegalArgumentException(NULL_EMPLOYEE_ARGUMENT_MESSAGE);
+        } else if (this.employee != null) {
             throw new AssignEmployeeException(OCCUPIED_VACANCY_MESSAGE);
         } else if (this.isDeleted) {
             throw new AssignEmployeeException(DELETED_VACANCY_MESSAGE);
@@ -108,15 +111,15 @@ public class Vacancy {
 }
 
 /*
-*               const
-*               arg     nullable    unique  insertable  updatable   setter  getter  init_method change_method
-*   ---------------------------------------------------------------------------------------------------------
-*   id          no      no          yes     yes         no          no      yes     ---         ---
-*   salary      yes     no          no      yes         yes         yes     yes     constructor setter
-*   position    yes     no          no      yes         yes         yes     yes     constructor setter
-*   employee    no      yes         yes     yes         yes         no      yes     ---         assignEmployee, removeEmployee
-*   addedAt     no      no          no      yes         no          no      yes     constructor ---
-*   isDeleted   no      no          no      yes         no          no      yes     constructor @SQLDelete
-*   deletedAt   no      yes         no      no          no          no      yes     ---         @SQLDelete
-*
-**/
+ *              const
+ *              arg     nullable    unique  insertable  updatable   setter  getter  init_method change_method
+ *  ---------------------------------------------------------------------------------------------------------
+ *  id          no      no          yes     yes         no          no      yes     ---         ---
+ *  salary      yes     no          no      yes         yes         yes     yes     constructor setter
+ *  position    yes     no          no      yes         yes         yes     yes     constructor setter
+ *  employee    no      yes         yes     yes         yes         no      yes     ---         assignEmployee, removeEmployee
+ *  addedAt     no      no          no      yes         no          no      yes     constructor ---
+ *  isDeleted   no      no          no      yes         no          no      yes     constructor @SQLDelete
+ *  deletedAt   no      yes         no      no          no          no      yes     ---         @SQLDelete
+ *
+ **/
