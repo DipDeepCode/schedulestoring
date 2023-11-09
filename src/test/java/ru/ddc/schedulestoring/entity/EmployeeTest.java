@@ -24,9 +24,9 @@ class EmployeeTest {
     @Test
     @DisplayName("Создание сотрудника с PersonalData = null")
     public void givenNullPersonalData_whenConstructEmployee_thenThrowException() {
-        assertThrows(
+        IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> new Employee(null),
-                Employee.NULL_PERSONAL_DATA_MESSAGE);
+                () -> new Employee(null));
+        assertEquals(Employee.NULL_PERSONAL_DATA_MESSAGE, exception.getMessage());
     }
 }

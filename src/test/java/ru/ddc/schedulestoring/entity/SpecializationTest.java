@@ -21,29 +21,29 @@ class SpecializationTest {
     @Test
     @DisplayName("Создание специализации с недопустимыми аргументами")
     public void givenIllegalArguments_whenConstructSpecialization_thenThrowException() {
-        assertThrows(
+        IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> new Specialization(null, "full description", "code"),
-                Specialization.NULL_OR_BLANK_ARGUMENT_MESSAGE);
-        assertThrows(
+                () -> new Specialization(null, "full description", "code"));
+        assertEquals(Specialization.NULL_OR_BLANK_ARGUMENT_MESSAGE, exception.getMessage());
+        exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> new Specialization("", "full description", "code"),
-                Specialization.NULL_OR_BLANK_ARGUMENT_MESSAGE);
-        assertThrows(
+                () -> new Specialization("", "full description", "code"));
+        assertEquals(Specialization.NULL_OR_BLANK_ARGUMENT_MESSAGE, exception.getMessage());
+        exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> new Specialization("brief description", null, "code"),
-                Specialization.NULL_OR_BLANK_ARGUMENT_MESSAGE);
-        assertThrows(
+                () -> new Specialization("brief description", null, "code"));
+        assertEquals(Specialization.NULL_OR_BLANK_ARGUMENT_MESSAGE, exception.getMessage());
+        exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> new Specialization("brief description", "", "code"),
-                Specialization.NULL_OR_BLANK_ARGUMENT_MESSAGE);
-        assertThrows(
+                () -> new Specialization("brief description", "", "code"));
+        assertEquals(Specialization.NULL_OR_BLANK_ARGUMENT_MESSAGE, exception.getMessage());
+        exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> new Specialization("brief description", "full description", null),
-                Specialization.NULL_OR_BLANK_ARGUMENT_MESSAGE);
-        assertThrows(
+                () -> new Specialization("brief description", "full description", null));
+        assertEquals(Specialization.NULL_OR_BLANK_ARGUMENT_MESSAGE, exception.getMessage());
+        exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> new Specialization("brief description", "full description", ""),
-                Specialization.NULL_OR_BLANK_ARGUMENT_MESSAGE);
+                () -> new Specialization("brief description", "full description", ""));
+        assertEquals(Specialization.NULL_OR_BLANK_ARGUMENT_MESSAGE, exception.getMessage());
     }
 }

@@ -20,6 +20,10 @@ class PhysicianTest {
 //        System.out.println(specialization);
         Physician physician = new Physician(personalData, new HashSet<>(Collections.singleton(specialization)));
 //        Employee employee = new Employee(personalData);
+
+//        assertDoesNotThrow();
+
+
         assertNotNull(physician.getPersonalData());
         assertNull(physician.getVacancy());
         assertNotNull(physician.getAddedAt());
