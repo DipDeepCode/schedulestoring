@@ -13,8 +13,7 @@ class EmployeeTest {
     @DisplayName("Создание сотрудника с допустимыми аргументами")
     public void givenValidParameters_whenConstructEmployee_thenSuccessful() {
         PersonalData personalData = entityFactory.createPersonalDataWithRandomValues();
-        Employee employee = new Employee(personalData);
-        assertNotNull(employee.getPersonalData());
+        Employee employee = assertDoesNotThrow(() -> new Employee(personalData));
         assertNull(employee.getVacancy());
         assertNotNull(employee.getAddedAt());
         assertFalse(employee.isDeleted());

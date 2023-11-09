@@ -1,13 +1,13 @@
 package ru.ddc.schedulestoring.utils;
 
-import ru.ddc.schedulestoring.entity.Employee;
-import ru.ddc.schedulestoring.entity.PersonalData;
-import ru.ddc.schedulestoring.entity.Specialization;
-import ru.ddc.schedulestoring.entity.Vacancy;
+import ru.ddc.schedulestoring.entity.*;
+
 import static ru.ddc.schedulestoring.utils.ObjectFieldsFiller.*;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 public class EntityFactory {
 
@@ -59,5 +59,29 @@ public class EntityFactory {
         Specialization specialization = new Specialization();
         fillFieldsWithRandomValues(specialization, "briefDescription", "fullDescription", "code");
         return specialization;
+    }
+
+    public Physician createPhysicianWithRandomValues() {
+        PersonalData personalData = createPersonalDataWithRandomValues();
+        Specialization specialization = createSpecializationWithRandomValues();
+        Set<Specialization> specializationSet = new HashSet<>();
+        specializationSet.add(specialization);
+        return new Physician(personalData, specializationSet);
+    }
+
+    public Physician createDeletedPhysicianWithRandomValues() {
+        Physician physician = createPhysicianWithRandomValues();
+        try {
+
+            Field isDeleted = physician.getClass().getSuperclass().getDeclaredField("isDeleted");
+            isDeleted.setAccessible(true);
+            isDeleted.setBoolean(physician, true);
+            Field deletedAt = physician.getClass().getSuperclass().getDeclaredField("deletedAt");
+            deletedAt.setAccessible(true);
+            deletedAt.set(physician, LocalDate.now());
+            return physician;
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -39,7 +39,8 @@ public class Specialization {
 
     public Specialization(String briefDescription, String fullDescription, String code) {
         if (briefDescription == null || fullDescription == null || code == null ||
-                briefDescription.isBlank() || fullDescription.isBlank() || code.isBlank()) {
+                briefDescription.isBlank() || fullDescription.isBlank() || code.isBlank() ||
+                briefDescription.length() < 5 || fullDescription.length() < 5 || code.length() < 2) {
             throw new IllegalArgumentException(NULL_OR_BLANK_ARGUMENT_MESSAGE);
         } else {
             this.briefDescription = briefDescription;

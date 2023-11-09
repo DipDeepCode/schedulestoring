@@ -23,11 +23,18 @@ class PersonalDataTest {
     public void givenNullOrBlankFirstname_whenConstructPersonalData_thenThrowException() {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> new PersonalData(null, "lastname", LocalDate.now().minusYears(18)));
+                () -> new PersonalData(null, "lastname",
+                        LocalDate.now().minusYears(18)));
         assertEquals(PersonalData.NULL_OR_BLANK_FIRSTNAME_MESSAGE, exception.getMessage());
         exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> new PersonalData("", "lastname", LocalDate.now().minusYears(18)));
+                () -> new PersonalData("     ", "lastname",
+                        LocalDate.now().minusYears(18)));
+        assertEquals(PersonalData.NULL_OR_BLANK_FIRSTNAME_MESSAGE, exception.getMessage());
+        exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new PersonalData("a", "lastname",
+                        LocalDate.now().minusYears(18)));
         assertEquals(PersonalData.NULL_OR_BLANK_FIRSTNAME_MESSAGE, exception.getMessage());
     }
 
@@ -36,11 +43,18 @@ class PersonalDataTest {
     public void givenNullOrBlankLastname_whenConstructPersonalData_thenThrowException() {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> new PersonalData("firstname", null, LocalDate.now().minusYears(18)));
+                () -> new PersonalData("firstname", null,
+                        LocalDate.now().minusYears(18)));
         assertEquals(PersonalData.NULL_OR_BLANK_LASTNAME_MESSAGE, exception.getMessage());
         exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> new PersonalData("firstname", "", LocalDate.now().minusYears(18)));
+                () -> new PersonalData("firstname", "     ",
+                        LocalDate.now().minusYears(18)));
+        assertEquals(PersonalData.NULL_OR_BLANK_LASTNAME_MESSAGE, exception.getMessage());
+        exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new PersonalData("firstname", "a",
+                        LocalDate.now().minusYears(18)));
         assertEquals(PersonalData.NULL_OR_BLANK_LASTNAME_MESSAGE, exception.getMessage());
     }
 
@@ -49,11 +63,13 @@ class PersonalDataTest {
     public void givenNullOrWrongBirthdate_whenConstructPersonalData_thenThrowException() {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> new PersonalData("firstname", "lastname", null));
+                () -> new PersonalData("firstname", "lastname",
+                        null));
         assertEquals(PersonalData.NULL_BIRTHDATE_MESSAGE, exception.getMessage());
         exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> new PersonalData("firstname", "lastname", LocalDate.now().plusDays(1L)));
+                () -> new PersonalData("firstname", "lastname",
+                        LocalDate.now().plusDays(1L)));
         assertEquals(PersonalData.WRONG_BIRTHDATE_MESSAGE, exception.getMessage());
     }
 
@@ -67,7 +83,12 @@ class PersonalDataTest {
         assertEquals(PersonalData.NULL_OR_BLANK_PATRONYMIC_MESSAGE, exception.getMessage());
         exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> new PersonalData("firstname", "lastname", "",
+                () -> new PersonalData("firstname", "lastname", "     ",
+                        LocalDate.now().minusYears(18)));
+        assertEquals(PersonalData.NULL_OR_BLANK_PATRONYMIC_MESSAGE, exception.getMessage());
+        exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new PersonalData("firstname", "lastname", "a",
                         LocalDate.now().minusYears(18)));
         assertEquals(PersonalData.NULL_OR_BLANK_PATRONYMIC_MESSAGE, exception.getMessage());
     }

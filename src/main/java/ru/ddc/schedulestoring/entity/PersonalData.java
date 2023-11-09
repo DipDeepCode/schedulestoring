@@ -39,28 +39,28 @@ public class PersonalData {
     }
 
     public PersonalData(String firstname, String lastname, LocalDate birthdate) {
-        if (firstname == null || firstname.length() < 2) {
+        if (firstname == null || firstname.isBlank() || firstname.length() < 2) {
             throw new IllegalArgumentException(NULL_OR_BLANK_FIRSTNAME_MESSAGE);
-        }
-        this.firstname = firstname;
-        if (lastname == null || lastname.length() < 2) {
+        } else if (lastname == null || lastname.isBlank() || lastname.length() < 2) {
             throw new IllegalArgumentException(NULL_OR_BLANK_LASTNAME_MESSAGE);
-        }
-        this.lastname = lastname;
-        if (birthdate == null) {
+        } else if (birthdate == null) {
             throw new IllegalArgumentException(NULL_BIRTHDATE_MESSAGE);
         } else if (birthdate.isAfter(LocalDate.now())) {
             throw new IllegalArgumentException(WRONG_BIRTHDATE_MESSAGE);
+        } else {
+            this.firstname = firstname;
+            this.lastname = lastname;
+            this.birthdate = birthdate;
         }
-        this.birthdate = birthdate;
     }
 
     public PersonalData(String firstname, String lastname, String patronymic, LocalDate birthdate) {
         this(firstname, lastname, birthdate);
-        if (patronymic == null || patronymic.length() < 2) {
+        if (patronymic == null || patronymic.isBlank() || patronymic.length() < 2) {
             throw new IllegalArgumentException(NULL_OR_BLANK_PATRONYMIC_MESSAGE);
+        } else {
+            this.patronymic = patronymic;
         }
-        this.patronymic = patronymic;
     }
 
     // TODO удалить метод toString
@@ -76,12 +76,15 @@ public class PersonalData {
 }
 
 /*
-*               const1  const2
-*               arg     arg     nullable    unique  insertable  updatable   setter  getter  init_method change_method
-*   -----------------------------------------------------------------------------------------------------------------
-*   firstname   yes     yes     no          no      yes         yes         yes     yes     constructor setter
-*   lastname    yes     yes     no          no      yes         yes         yes     yes     constructor setter
-*   patronymic  no      yes     yes         no      yes         yes         yes     yes     constructor setter
-*   birthdate   yes     yes     no          no      yes         yes         yes     yes     constructor setter
-*
-* */
+ *              const1  const2  null            insert  update                  init    change
+ *  field       arg     arg     able    unique  able    able    setter  getter  method  method
+ *  ------------------------------------------------------------------------------------------
+ *  --- THIS ---------------------------------------------------------------------------------
+ *  ------------------------------------------------------------------------------------------
+ *  firstname   yes     yes     no      no      yes     yes     yes     yes     const   setter
+ *  lastname    yes     yes     no      no      yes     yes     yes     yes     const   setter
+ *  patronymic  no      yes     yes     no      yes     yes     yes     yes     const   setter
+ *  birthdate   yes     yes     no      no      yes     yes     yes     yes     const   setter
+ *  ------------------------------------------------------------------------------------------
+ *
+ **/

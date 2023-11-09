@@ -4,13 +4,16 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Entity
 @DiscriminatorValue("physician")
 public class Physician extends Employee {
-
+    public static final String NULL_OR_EMPTY_SPECIALIZATIONS_MESSAGE = "Не указана специализация";
+    public static final String NULL_SPECIALIZATION_MESSAGE = "Не указана специализация";
+    public static final String SPECIALIZATIONS_ALREADY_ADDED_MESSAGE = "Такая специализация уже добавлена";
+    public static final String DELETED_PHYSICIAN_MESSAGE = "Врач удален";
+    public static final String MISSING_SPECIALIZATION_MESSAGE = "Специализация отсутствует";
 
     @Getter
     @OneToMany(mappedBy = "physician",
@@ -32,8 +35,32 @@ public class Physician extends Employee {
 
     public Physician(PersonalData personalData, Set<Specialization> specializations) {
         super(personalData);
-        this.slots = new HashSet<>();
-        this.specializations = specializations;
+        if (specializations == null || specializations.isEmpty()) {
+            throw new IllegalArgumentException(NULL_OR_EMPTY_SPECIALIZATIONS_MESSAGE);
+        } else {
+            this.specializations = specializations;
+            this.slots = new HashSet<>();
+        }
+    }
+
+    public void addSpecialization(final Specialization specialization) {
+        if (specialization == null) {
+            throw new IllegalArgumentException(NULL_SPECIALIZATION_MESSAGE);
+        } else if (super.isDeleted()) {
+            throw new IllegalArgumentException(DELETED_PHYSICIAN_MESSAGE);
+        } else if (!this.specializations.add(specialization)) {
+            throw new IllegalArgumentException(SPECIALIZATIONS_ALREADY_ADDED_MESSAGE);
+        }
+    }
+
+    public void removeSpecialization(final Specialization specialization) {
+        if (specialization == null) {
+            throw new IllegalArgumentException(NULL_SPECIALIZATION_MESSAGE);
+        } else if (super.isDeleted()) {
+            throw new IllegalArgumentException(DELETED_PHYSICIAN_MESSAGE);
+        } else if (!this.specializations.remove(specialization)) {
+            throw new IllegalArgumentException(MISSING_SPECIALIZATION_MESSAGE);
+        }
     }
 
     public void addSlot(final Slot slot) {
@@ -43,12 +70,21 @@ public class Physician extends Employee {
             throw new IllegalArgumentException();
         } else if (super.getVacancy() == null) {
             throw new IllegalArgumentException();
-        } else if (this.slots.contains(slot)) {
+        } else if (!this.slots.add(slot)) {
             throw new IllegalArgumentException();
-        } else {
-            this.slots.add(slot);
         }
     }
+
+    // TODO удалить метод toString
+    @Override
+    public String toString() {
+        return "Physician{" +
+                "personalData=" + super.getPersonalData() +
+                ", slots=" + slots +
+                ", specializations=" + specializations +
+                '}';
+    }
+}
 
 /*
  *                  const   null            insert  update                  init    change
@@ -69,10 +105,8 @@ public class Physician extends Employee {
  *  -------------------------------------------------------------------------------------------------
  *  --- THIS ----------------------------------------------------------------------------------------
  *  -------------------------------------------------------------------------------------------------
+ *  specializations yes     ---     ---     ---     ---     no      yes     const   addSpec, removeSpec
  *  slots           no      ---     ---     ---     ---     no      yes     const   addSlot, removeSlot
- *  specializations yes     ---     ---     ---     ---     no      yes     const
  *  -------------------------------------------------------------------------------------------------
  *
  **/
-
-}

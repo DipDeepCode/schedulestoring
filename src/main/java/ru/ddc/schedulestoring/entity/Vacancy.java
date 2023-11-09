@@ -61,16 +61,16 @@ public class Vacancy {
     public Vacancy(Long salary, String position) {
         if (salary <= 0) {
             throw new IllegalArgumentException(NEGATIVE_OR_ZERO_SALARY_MESSAGE);
-        }
-        this.salary = salary;
-        if (position == null || position.isEmpty()) {
+        } else if (position == null || position.isBlank() || position.length() < 5) {
             throw new IllegalArgumentException(NULL_OR_BLANK_POSITION_MESSAGE);
+        } else {
+            this.salary = salary;
+            this.position = position;
+            this.employee = null;
+            this.addedAt = LocalDate.now();
+            this.isDeleted = false;
+            this.deletedAt = null;
         }
-        this.position = position;
-        this.employee = null;
-        this.addedAt = LocalDate.now();
-        this.isDeleted = false;
-        this.deletedAt = null;
     }
 
     public void assignEmployee(final Employee employee) {

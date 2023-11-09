@@ -14,8 +14,8 @@ class VacancyTest {
 
     @Test
     @DisplayName("Создание вакансии с допустимыми аргументами")
-    public void givenPositiveSalaryAndNotBlankPosition_whenConstructVacancy_thenSuccessful() {
-        Vacancy vacancy = new Vacancy(100L, "position");
+    public void givenValidParameters_whenConstructVacancy_thenSuccessful() {
+        Vacancy vacancy = assertDoesNotThrow(() -> new Vacancy(100L, "position"));
         assertNull(vacancy.getEmployee());
         assertNotNull(vacancy.getAddedAt());
         assertFalse(vacancy.isDeleted());
@@ -45,7 +45,11 @@ class VacancyTest {
         assertEquals(Vacancy.NULL_OR_BLANK_POSITION_MESSAGE, exception.getMessage());
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new Vacancy(100L, ""));
+                () -> new Vacancy(100L, "     "));
+        assertEquals(Vacancy.NULL_OR_BLANK_POSITION_MESSAGE, exception.getMessage());
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new Vacancy(100L, "abc"));
         assertEquals(Vacancy.NULL_OR_BLANK_POSITION_MESSAGE, exception.getMessage());
     }
 
