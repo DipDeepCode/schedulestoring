@@ -1,95 +1,113 @@
 package ru.ddc.schedulestoring.entity;
 
-import org.junit.jupiter.api.DisplayName;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import ru.ddc.schedulestoring.utils.EntityFactory;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class PersonalDataTest {
+    private static Validator validator;
 
-    @Test
-    @DisplayName("Создание персональных данных с допустимыми аргументами")
-    public void givenValidParameters_whenConstructPersonalData_thenSuccessful() {
-        assertDoesNotThrow(() -> new PersonalData("firstname", "lastname",
-                LocalDate.now().minusYears(18)));
-        assertDoesNotThrow(() -> new PersonalData("firstname", "lastname", "patronymic",
-                LocalDate.now().minusYears(18)));
+    private final EntityFactory entityFactory = new EntityFactory();
+
+    @BeforeAll
+    public static void setup() {
+        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+        validator = validatorFactory.getValidator();
+        validatorFactory.close();
     }
 
     @Test
-    @DisplayName("Создание персональных данных с пустым или null именем")
-    public void givenNullOrBlankFirstname_whenConstructPersonalData_thenThrowException() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new PersonalData(null, "lastname",
-                        LocalDate.now().minusYears(18)));
-        assertEquals(PersonalData.NULL_OR_BLANK_FIRSTNAME_MESSAGE, exception.getMessage());
-        exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new PersonalData("     ", "lastname",
-                        LocalDate.now().minusYears(18)));
-        assertEquals(PersonalData.NULL_OR_BLANK_FIRSTNAME_MESSAGE, exception.getMessage());
-        exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new PersonalData("a", "lastname",
-                        LocalDate.now().minusYears(18)));
-        assertEquals(PersonalData.NULL_OR_BLANK_FIRSTNAME_MESSAGE, exception.getMessage());
+    public void givenValidPersonalData_whenValidate_thenNoConstraintViolation() {
+        PersonalData personalData = entityFactory.createPersonalDataWithRandomValues();
+        Set<ConstraintViolation<PersonalData>> violations = validator.validate(personalData);
+        assertTrue(violations.isEmpty());
     }
 
     @Test
-    @DisplayName("Создание персональных данных с пустой или null фамилией")
-    public void givenNullOrBlankLastname_whenConstructPersonalData_thenThrowException() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new PersonalData("firstname", null,
-                        LocalDate.now().minusYears(18)));
-        assertEquals(PersonalData.NULL_OR_BLANK_LASTNAME_MESSAGE, exception.getMessage());
-        exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new PersonalData("firstname", "     ",
-                        LocalDate.now().minusYears(18)));
-        assertEquals(PersonalData.NULL_OR_BLANK_LASTNAME_MESSAGE, exception.getMessage());
-        exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new PersonalData("firstname", "a",
-                        LocalDate.now().minusYears(18)));
-        assertEquals(PersonalData.NULL_OR_BLANK_LASTNAME_MESSAGE, exception.getMessage());
+    public void givenPersonalDataWithNullFirstname_whenValidate_thenOneConstraintViolationWithSpecificMessage() {
+        PersonalData personalData = entityFactory.createPersonalDataWithRandomValues();
+        personalData.setFirstname(null);
+        Set<ConstraintViolation<PersonalData>> violations = validator.validate(personalData);
+        assertEquals(1, violations.size());
+        String message = violations.stream().findAny().orElseThrow().getMessage();
+        assertEquals(PersonalData.FIRSTNAME_IS_BLANK_MESSAGE, message);
     }
 
     @Test
-    @DisplayName("Создание персональных данных с пустой датой рождения или датой рождения в будущем")
-    public void givenNullOrWrongBirthdate_whenConstructPersonalData_thenThrowException() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new PersonalData("firstname", "lastname",
-                        null));
-        assertEquals(PersonalData.NULL_BIRTHDATE_MESSAGE, exception.getMessage());
-        exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new PersonalData("firstname", "lastname",
-                        LocalDate.now().plusDays(1L)));
-        assertEquals(PersonalData.WRONG_BIRTHDATE_MESSAGE, exception.getMessage());
+    public void givenPersonalDataWithShortFirstname_whenValidate_thenOneConstraintViolationWithSpecificMessage() {
+        PersonalData personalData = entityFactory.createPersonalDataWithRandomValues();
+        personalData.setFirstname("a");
+        Set<ConstraintViolation<PersonalData>> violations = validator.validate(personalData);
+        assertEquals(1, violations.size());
+        String message = violations.stream().findAny().orElseThrow().getMessage();
+        assertEquals(PersonalData.FIRSTNAME_LENGTH_NOT_VALID_MESSAGE, message);
     }
 
     @Test
-    @DisplayName("Создание персональных данных с пустым или null отчеством")
-    public void givenNullOrBlankBirthdate_whenConstructPersonalData_thenThrowException() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new PersonalData("firstname", "lastname", null,
-                        LocalDate.now().minusYears(18)));
-        assertEquals(PersonalData.NULL_OR_BLANK_PATRONYMIC_MESSAGE, exception.getMessage());
-        exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new PersonalData("firstname", "lastname", "     ",
-                        LocalDate.now().minusYears(18)));
-        assertEquals(PersonalData.NULL_OR_BLANK_PATRONYMIC_MESSAGE, exception.getMessage());
-        exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new PersonalData("firstname", "lastname", "a",
-                        LocalDate.now().minusYears(18)));
-        assertEquals(PersonalData.NULL_OR_BLANK_PATRONYMIC_MESSAGE, exception.getMessage());
+    public void givenPersonalDataWithLongFirstname_whenValidate_thenOneConstraintViolationWithSpecificMessage() {
+        PersonalData personalData = entityFactory.createPersonalDataWithRandomValues();
+        personalData.setFirstname("abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij");
+        Set<ConstraintViolation<PersonalData>> violations = validator.validate(personalData);
+        assertEquals(1, violations.size());
+        String message = violations.stream().findAny().orElseThrow().getMessage();
+        assertEquals(PersonalData.FIRSTNAME_LENGTH_NOT_VALID_MESSAGE, message);
+    }
+
+    @Test
+    public void givenPersonalDataWithNullLastname_whenValidate_thenOneConstraintViolationWithSpecificMessage() {
+        PersonalData personalData = entityFactory.createPersonalDataWithRandomValues();
+        personalData.setLastname(null);
+        Set<ConstraintViolation<PersonalData>> violations = validator.validate(personalData);
+        assertEquals(1, violations.size());
+        String message = violations.stream().findAny().orElseThrow().getMessage();
+        assertEquals(PersonalData.LASTNAME_IS_BLANK_MESSAGE, message);
+    }
+
+    @Test
+    public void givenPersonalDataWithShortLastname_whenValidate_thenOneConstraintViolationWithSpecificMessage() {
+        PersonalData personalData = entityFactory.createPersonalDataWithRandomValues();
+        personalData.setLastname("a");
+        Set<ConstraintViolation<PersonalData>> violations = validator.validate(personalData);
+        assertEquals(1, violations.size());
+        String message = violations.stream().findAny().orElseThrow().getMessage();
+        assertEquals(PersonalData.LASTNAME_LENGTH_NOT_VALID_MESSAGE, message);
+    }
+    @Test
+    public void givenPersonalDataWithLongLastname_whenValidate_thenOneConstraintViolationWithSpecificMessage() {
+        PersonalData personalData = entityFactory.createPersonalDataWithRandomValues();
+        personalData.setLastname("abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij");
+        Set<ConstraintViolation<PersonalData>> violations = validator.validate(personalData);
+        assertEquals(1, violations.size());
+        String message = violations.stream().findAny().orElseThrow().getMessage();
+        assertEquals(PersonalData.LASTNAME_LENGTH_NOT_VALID_MESSAGE, message);
+    }
+
+    @Test
+    public void givenPersonalDateWithNullBirthdate_whenValidate_thenOneConstraintViolationWithSpecificMessage() {
+        PersonalData personalData = entityFactory.createPersonalDataWithRandomValues();
+        personalData.setBirthdate(null);
+        Set<ConstraintViolation<PersonalData>> violations = validator.validate(personalData);
+        assertEquals(1, violations.size());
+        String message = violations.stream().findAny().orElseThrow().getMessage();
+        assertEquals(PersonalData.BIRTHDATE_IS_BLANK_MESSAGE, message);
+    }
+
+    @Test
+    public void givenPersonalDataWithBirthdateInFuture_whenValidate_thenOneConstraintViolationWithSpecificMessage() {
+        PersonalData personalData = entityFactory.createPersonalDataWithRandomValues();
+        personalData.setBirthdate(LocalDate.now());
+        Set<ConstraintViolation<PersonalData>> violations = validator.validate(personalData);
+        assertEquals(1, violations.size());
+        String message = violations.stream().findAny().orElseThrow().getMessage();
+        assertEquals(PersonalData.BIRTHDATE_MUST_BE_IN_PAST_MESSAGE, message);
     }
 }

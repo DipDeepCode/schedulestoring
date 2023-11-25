@@ -74,16 +74,6 @@ public class Physician extends Employee {
             throw new IllegalArgumentException();
         }
     }
-
-    // TODO удалить метод toString
-    @Override
-    public String toString() {
-        return "Physician{" +
-                "personalData=" + super.getPersonalData() +
-                ", slots=" + slots +
-                ", specializations=" + specializations +
-                '}';
-    }
 }
 
 /*
