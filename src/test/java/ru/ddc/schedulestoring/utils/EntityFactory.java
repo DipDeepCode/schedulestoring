@@ -13,13 +13,15 @@ public class EntityFactory {
 
     public PersonalData createPersonalDataWithRandomValues() {
         PersonalData personalData = new PersonalData();
-        fillFieldsWithRandomValues(personalData,
-                "firstname", "lastname", "patronymic", "birthdate");
+        fillFieldsWithRandomValues(personalData, "firstname", "lastname", "patronymic", "birthdate");
         return personalData;
     }
 
     public Employee createEmployeeWithRandomValues() {
-        return new Employee(createPersonalDataWithRandomValues());
+        Employee employee = new Employee();
+        PersonalData personalData = createPersonalDataWithRandomValues();
+        employee.setPersonalData(personalData);
+        return employee;
     }
 
     public Vacancy createVacancyWithRandomValues() {

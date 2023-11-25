@@ -1,12 +1,14 @@
 package ru.ddc.schedulestoring.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 
 import java.time.LocalDate;
 
+@Getter
 @Entity
 @Table(
         name = "employee",
@@ -21,76 +23,53 @@ import java.time.LocalDate;
 public class Employee {
     public static final String NULL_PERSONAL_DATA_MESSAGE = "Не указаны персональные данные";
 
-    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Getter
     @Setter
     @Embedded
+    @NotNull(message = NULL_PERSONAL_DATA_MESSAGE)
     private PersonalData personalData;
 
-    @Getter
     @Setter
     @OneToOne(mappedBy = "employee")
-    private Vacancy vacancy;
+    private Vacancy vacancy = null;
 
-    @Getter
     @Column(name = "added_at", nullable = false, updatable = false)
-    private LocalDate addedAt;
+    private LocalDate addedAt = LocalDate.now();
 
-    @Getter
     @Column(name = "is_deleted", nullable = false, updatable = false)
-    private boolean isDeleted;
+    private boolean isDeleted = false;
 
-    @Getter
     @Column(name = "deleted_at", insertable = false, updatable = false)
-    private LocalDate deletedAt;
+    private LocalDate deletedAt = null;
 
     public Employee() {
     }
 
     public Employee(PersonalData personalData) {
-        if (personalData == null) {
-            throw new IllegalArgumentException(NULL_PERSONAL_DATA_MESSAGE);
-        } else {
-            this.personalData = personalData;
-            this.vacancy = null;
-            this.addedAt = LocalDate.now();
-            this.isDeleted = false;
-            this.deletedAt = null;
-        }
+        this.personalData = personalData;
     }
-
-    // TODO удалить метод toString
-    @Override
-    public String toString() {
-        return "Employee{" +
-                "id=" + id +
-                ", personalData=" + personalData +
-                ", vacancy_id=" + (vacancy == null ? null : vacancy.getId()) +
-                ", addedAt=" + addedAt +
-                ", isDeleted=" + isDeleted +
-                ", deletedAt=" + deletedAt +
-                '}';
-    }
+}
 
 /*
-*                   const
-*                   arg     nullable    unique  insertable  updatable   setter  getter  init_method change_method
-*   -------------------------------------------------------------------------------------------------------------
-*   id              no      no          yes     yes         no          no      yes     ---         ---
-*   personal_data   yes     ---         yes     ---         ---         yes     yes     constructor setter
-*       firstname   ---     no          ---     yes         yes         ---     yes     ---         ---
-*       lastname    ---     no          ---     yes         yes         ---     yes     ---         ---
-*       patronymic  ---     yes         ---     yes         yes         ---     yes     ---         ---
-*       birthdate   ---     no          ---     yes         yes         ---     yes     ---         ---
-*   vacancy         no      yes         ---     yes         yes         yes     yes     constructor setter
-*   addedAt         no      no          no      yes         no          no      yes     constructor ---
-*   isDeleted       no      no          no      yes         no          no      yes     constructor @SQLDelete
-*   deletedAt       no      yes         no      no          no          no      yes     constructor @SQLDelete
-*
-**/
-}
+ *                  null            insert  update                  init    change
+ *  field           able    unique  able    able    setter  getter  method  method
+ *  ------------------------------------------------------------------------------
+ *  --- THIS ---------------------------------------------------------------------
+ *  ------------------------------------------------------------------------------
+ *  id              no      yes     yes     no      no      yes     ---     ---
+ *  personal_data   ---     yes     ---     ---     yes     yes     const   setter
+ *      firstname   no      ---     yes     yes     ---     yes     ---     ---
+ *      lastname    no      ---     yes     yes     ---     yes     ---     ---
+ *      patronymic  yes     ---     yes     yes     ---     yes     ---     ---
+ *      birthdate   no      ---     yes     yes     ---     yes     ---     ---
+ *  vacancy         yes     ---     yes     yes     yes     yes     const   setter
+ *  addedAt         no      no      yes     no      no      yes     const   ---
+ *  isDeleted       no      no      yes     no      no      yes     const   @SQLDelete
+ *  deletedAt       yes     no      no      no      no      yes     const   @SQLDelete
+ *  ------------------------------------------------------------------------------
+ *
+ **/
